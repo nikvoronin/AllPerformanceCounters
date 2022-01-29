@@ -1,6 +1,7 @@
 ﻿// NuGet package `System.Diagnostics.PerformanceCounter` have to be installed
 // .NET 6
 
+#nullable disable
 using System.Globalization;
 using System.Diagnostics;
 
@@ -11,20 +12,20 @@ var cats = PerformanceCounterCategory.GetCategories( Environment.MachineName );
 foreach ( var cat in cats ) {
     writer.WriteLine( $"CATEGORY: {cat.CategoryName}" );
 
-    string[] instances = Array.Empty<string>();
+    var instances = Array.Empty<string>();
     try {
         instances = cat.GetInstanceNames();
         var hasNotInstance = instances.Length == 0;
         if ( hasNotInstance )
-            PrintCounters();
+            PrintCounters( cat );
         else {
             foreach ( var instanceName in instances )
-                PrintCounters( instanceName );
+                PrintCounters( cat, instanceName );
         }
     }
     catch { }
 
-    void PrintCounters( string instanceName = "" )
+    void PrintCounters( PerformanceCounterCategory cat, string instanceName = "" )
     {
         if ( !string.IsNullOrEmpty( instanceName ) )
             writer.Write( $"\tINSTANCE: {instanceName}\n\t" );
