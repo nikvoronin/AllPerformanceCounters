@@ -2,7 +2,7 @@
 // Less functional way there https://gist.github.com/nikvoronin/643b9dc775c648a0397fdf853f70e7b0
 // .NET 6
 
-#nullable disable
+#nullable enable
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -14,15 +14,23 @@ var categories = PerformanceCounterCategory.GetCategories( Environment.MachineNa
 foreach ( var category in categories ) {
     writer.WriteLine( $"CATEGORY: {category.CategoryName}" );
 
-    string[] instances = ResultOrDefault( ( cat ) => cat.GetInstanceNames(), category );
+    string[] instances = ResultOrDefault( 
+        ( cat ) => cat.GetInstanceNames(), 
+        Array.Empty<string>(), 
+        category );
+
 
     // fallthrough if there are no instances
     foreach ( var instanceContent in EnumerateInstances( instances, category ) )
         writer.Write( instanceContent );
 
     var noInstances = instances.Length == 0;
-    if ( noInstances )
-        writer.Write( ResultOrDefault( ( cat ) => cat.GetCounters().ToText(), category ) );
+    if ( noInstances ) {
+        writer.Write( ResultOrDefault(
+            ( cat ) => cat.GetCounters().ToText(),
+            string.Empty,
+            category ) );
+    }
 }
 
 writer.WriteLine( "END." );
@@ -32,14 +40,18 @@ static IEnumerable<string> EnumerateInstances( IEnumerable<string> instances, Pe
     foreach ( var instance in instances )
         yield return
             $"\tINSTANCE: {instance}\n\t"
-            + ResultOrDefault( ( cat ) => cat.GetCounters( instance ), category ).ToText();
+            + ResultOrDefault( 
+                ( cat ) => cat.GetCounters( instance ), 
+                Array.Empty<PerformanceCounter>(), 
+                category )
+            .ToText();
 }
 
-static TResult ResultOrDefault<TArg, TResult>( Func<TArg, TResult> f, TArg x )
+static TResult ResultOrDefault<TArg, TResult>( Func<TArg, TResult> f, TResult @default, TArg x )
 {
     try { return f( x ); }
     catch { }
-    return default;
+    return @default;
 }
 
 public static class Extensions
