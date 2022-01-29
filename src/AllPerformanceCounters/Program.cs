@@ -8,37 +8,51 @@ using System.Diagnostics;
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 using var writer = new StreamWriter( Console.OpenStandardOutput() );
 
-var cats = PerformanceCounterCategory.GetCategories( Environment.MachineName );
-foreach ( var cat in cats ) {
+var categories = PerformanceCounterCategory.GetCategories( Environment.MachineName );
+foreach ( var cat in categories ) {
     writer.WriteLine( $"CATEGORY: {cat.CategoryName}" );
 
-    var instances = Array.Empty<string>();
+    string[] instances = default;
     try {
         instances = cat.GetInstanceNames();
-        var hasNotInstance = instances.Length == 0;
-        if ( hasNotInstance )
-            PrintCounters( cat );
-        else {
-            foreach ( var instanceName in instances )
-                PrintCounters( cat, instanceName );
-        }
     }
     catch { }
 
-    void PrintCounters( PerformanceCounterCategory cat, string instanceName = "" )
-    {
-        if ( !string.IsNullOrEmpty( instanceName ) )
-            writer.Write( $"\tINSTANCE: {instanceName}\n\t" );
+    writer.WriteInstances( cat, instances );
 
-        writer.WriteLine( "\tCOUNTERS:" );
-
-        var counters = string.IsNullOrEmpty( instanceName )
-            ? cat.GetCounters()
-            : cat.GetCounters( instanceName );
-
-        foreach ( var counter in counters )
-            writer.WriteLine( $"\t\t{counter.CounterName}" );
+    var noInstances = instances.Length == 0;
+    if ( noInstances ) {
+        try {
+            var counters = cat.GetCounters();
+            writer.WriteCounters( counters );
+        }
+        catch { }
     }
 }
 
 writer.WriteLine( "END." );
+
+public static class Extensions
+{
+    public static void WriteInstances( this StreamWriter writer,
+        PerformanceCounterCategory category,
+        IEnumerable<string> instances )
+    {
+        foreach ( var instanceName in instances ) {
+            try {
+                var counters = category.GetCounters( instanceName );
+                writer.Write( $"\tINSTANCE: {instanceName}\n\t" );
+                writer.WriteCounters( counters );
+            }
+            catch { }
+        }
+    }
+
+    public static void WriteCounters( this StreamWriter writer,
+        IEnumerable<PerformanceCounter> counters )
+    {
+        writer.WriteLine( "\tCOUNTERS:" );
+        foreach ( var counter in counters )
+            writer.WriteLine( $"\t\t{counter.CounterName}" );
+    }
+}
