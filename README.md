@@ -4,9 +4,11 @@ Enumerates and prints all system performance counters
 
 ## System Utility
 
-You can monitor your Windows system over `perfmon`s:
+You can monitor your Windows system over `Performance Monitor`:
 
 > `Win+R` &rarr; `perfmon` &rarr; `OK`
+
+![tools_perfmon_addCounters](https://user-images.githubusercontent.com/11328666/152036463-2d7cb2ae-4ef5-40ad-a990-5ffec048bf44.png)
 
 ## Code First
 
