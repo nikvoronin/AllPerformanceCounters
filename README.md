@@ -17,3 +17,20 @@ It is important to select right thread culture:
 ```c#
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 ```
+
+### CPU Load
+
+```c#
+Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+var processorCategory = PerformanceCounterCategory.GetCategories()
+    .FirstOrDefault( cat => cat.CategoryName == "Processor" );
+var countersInCategory = processorCategory?.GetCounters( "_Total" );
+var cpuLoadCounter = countersInCategory?
+    .First( cnt => cnt.CounterName == "% Processor Time" );
+
+while ( !Console.KeyAvailable ) {
+    Console.WriteLine( $"CPU Load: { cpuLoadCounter?.NextValue() ?? 0f }" );
+    Thread.Sleep( 300 );
+}
+```
