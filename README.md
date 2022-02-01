@@ -34,3 +34,21 @@ while ( !Console.KeyAvailable ) {
     Thread.Sleep( 300 );
 }
 ```
+
+### Memory Usage
+
+Some categories contains `instances` but some not. Memory has not:
+
+```c#
+Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+var memoryCategory = PerformanceCounterCategory.GetCategories()
+    .FirstOrDefault( cat => cat.CategoryName == "Memory" );
+var memoryUsage = memoryCategory?.GetCounters()
+    .First( cnt => cnt.CounterName == "Available MBytes" );
+
+while ( !Console.KeyAvailable ) {
+    Console.WriteLine( $"Memory usage: { memoryUsage?.NextValue() ?? 0f } MBytes" );
+    Thread.Sleep( 300 );
+}
+```
