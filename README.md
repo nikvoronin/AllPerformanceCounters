@@ -70,12 +70,15 @@ while ( !Console.KeyAvailable ) {
 
 Temperature in Kelvin degrees.
 
-> Chips used for things like fan control have an internal structure that allows them to be set up so that zone 1 might be ram+cache, zone 2 cpu, zone 3 video card. Pretty much the way you can divide a home into zones for heating and cooling.
+> Chips used for things like fan control have an internal structure that allows them to be set up so that zone 1 might be ram+cache,
+            zone 2 cpu,
+            zone 3 video card. Pretty much the way you can divide a home into zones for heating and cooling.
 
 - [Thermal management in Windows](https://docs.microsoft.com/en-us/windows-hardware/design/device-experiences/design-guide). This PC thermal management design guide provides information about how to determine the PC temperature values that are "too hot" and "too cold." // 08/24/2021
 - [ACPI Specification 6.4 - Thermal Management - Thermal Objects](https://uefi.org/specs/ACPI/6.4/11_Thermal_Management/thermal-objects.html?highlight=tzd)
 
 ```c#
+const double AbsZeroK = 273.15;
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
 var thermalCategory = PerformanceCounterCategory.GetCategories()
@@ -85,7 +88,7 @@ var temperature = countersInCategory?
     .First( cnt => cnt.CounterName == "High Precision Temperature" ); // "Temperature"
 
 while ( !Console.KeyAvailable ) {
-    Console.WriteLine( $"Temperature: { temperature?.NextValue() / 100 ?? 0f } *C" );
+    Console.WriteLine( $"Temperature: { (( temperature?.NextValue() ?? AbsZeroK * 10.0 ) / 10.0 - AbsZeroK):0.#} °C" );
     Thread.Sleep( 300 );
 }
 ```
@@ -99,7 +102,9 @@ Get-WmiObject -Class Win32_PerfFormattedData_Counters_ThermalZoneInformation |Se
 Instances for thermal zones (TZ):
 
 - \_TZ.THRM
-- \_TZ.TZ00, \_TZ.TZ01, \_TZ.TZ02
+- \_TZ.TZ00,
+            \_TZ.TZ01,
+            \_TZ.TZ02
 - \_TZ.EXTZ
 - \_TZ.GFXZ - GPU or graphics card
 - \_TZ.LOCZ
