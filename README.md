@@ -70,6 +70,8 @@ while ( !Console.KeyAvailable ) {
 
 Temperature in Kelvin degrees.
 
+> Chips used for things like fan control have an internal structure that allows them to be set up so that zone 1 might be ram+cache, zone 2 cpu, zone 3 video card. Pretty much the way you can divide a home into zones for heating and cooling.
+
 - [Thermal management in Windows](https://docs.microsoft.com/en-us/windows-hardware/design/device-experiences/design-guide). This PC thermal management design guide provides information about how to determine the PC temperature values that are "too hot" and "too cold." // 08/24/2021
 - [ACPI Specification 6.4 - Thermal Management - Thermal Objects](https://uefi.org/specs/ACPI/6.4/11_Thermal_Management/thermal-objects.html?highlight=tzd)
 
@@ -88,11 +90,11 @@ while ( !Console.KeyAvailable ) {
 }
 ```
 
+Command line with PowerShell:
+
 ```powershell
 Get-WmiObject -Class Win32_PerfFormattedData_Counters_ThermalZoneInformation |Select-Object Name,Temperature
 ```
-
-> Chips used for things like fan control have an internal structure that allows them to be set up so that zone 1 might be ram+cache, zone 2 cpu, zone 3 video card. Pretty much the way you can divide a home into zones for heating and cooling.
 
 Instances for thermal zones (TZ):
 
@@ -159,7 +161,7 @@ Acer Nitro 5 laptop:
 
 ```plain
 CATEGORY: Thermal Zone Information
-    INSTANCE:
+    INSTANCE: \_TZ.TZ01
         >>> COUNTERS:
         Temperature
         % Passive Limit
