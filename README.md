@@ -36,11 +36,18 @@ Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 ```c#
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var processorCategory = PerformanceCounterCategory.GetCategories()
+var processorCategory =
+    PerformanceCounterCategory
+    .GetCategories()
     .FirstOrDefault( cat => cat.CategoryName == "Processor" );
-var countersInCategory = processorCategory?.GetCounters( "_Total" );
-var cpuLoadCounter = countersInCategory?
-    .First( cnt => cnt.CounterName == "% Processor Time" );
+
+var countersInCategory =
+    processorCategory
+    ?.GetCounters( "_Total" );
+
+var cpuLoadCounter =
+    countersInCategory
+    ?.First( cnt => cnt.CounterName == "% Processor Time" );
 
 while ( !Console.KeyAvailable ) {
     Console.WriteLine( $"CPU Load: { cpuLoadCounter?.NextValue() ?? 0f }" );
@@ -55,9 +62,14 @@ Some categories contains `instances` but some not. Memory has not:
 ```c#
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var memoryCategory = PerformanceCounterCategory.GetCategories()
+var memoryCategory =
+    PerformanceCounterCategory
+    .GetCategories()
     .FirstOrDefault( cat => cat.CategoryName == "Memory" );
-var memoryUsage = memoryCategory?.GetCounters()
+
+var memoryUsage =
+    memoryCategory
+    ?.GetCounters()
     .First( cnt => cnt.CounterName == "Available MBytes" );
 
 while ( !Console.KeyAvailable ) {
@@ -81,11 +93,18 @@ Temperature in Kelvin degrees.
 const double AbsZeroK = 273.15;
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var thermalCategory = PerformanceCounterCategory.GetCategories()
+var thermalCategory =
+    PerformanceCounterCategory
+    .GetCategories()
     .FirstOrDefault( cat => cat.CategoryName == "Thermal Zone Information" );
-var countersInCategory = thermalCategory?.GetCounters( @"\_TZ.TZ00" );
-var temperature = countersInCategory?
-    .First( cnt => cnt.CounterName == "High Precision Temperature" ); // "Temperature"
+
+var countersInCategory =
+    thermalCategory
+    ?.GetCounters( @"\_TZ.TZ00" );
+
+var temperature =
+    countersInCategory
+    ?.First( cnt => cnt.CounterName == "High Precision Temperature" ); // "Temperature"
 
 while ( !Console.KeyAvailable ) {
     Console.WriteLine( $"Temperature: { (( temperature?.NextValue() ?? AbsZeroK * 10.0 ) / 10.0 - AbsZeroK):0.#} °C" );
@@ -102,9 +121,7 @@ Get-WmiObject -Class Win32_PerfFormattedData_Counters_ThermalZoneInformation |Se
 Instances for thermal zones (TZ):
 
 - \_TZ.THRM
-- \_TZ.TZ00,
-            \_TZ.TZ01,
-            \_TZ.TZ02
+- \_TZ.TZ00, \_TZ.TZ01, \_TZ.TZ02
 - \_TZ.EXTZ
 - \_TZ.GFXZ - GPU or graphics card
 - \_TZ.LOCZ
