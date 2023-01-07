@@ -136,7 +136,9 @@ Instances for thermal zones (TZ):
 - \_TZ.SKNZ
 - \_TZ.FDTZ - fan speed not temperature
 
-Example listing (HP ProBook G7 laptop):
+## Examples
+
+### HP ProBook G7 Laptop
 
 ```plain
 Thermal Zone Information
@@ -179,7 +181,7 @@ Thermal Zone Information
         High Precision Temperature
 ```
 
-Acer Nitro 5 laptop:
+### Acer Nitro 5 Laptop
 
 ```plain
 CATEGORY: Thermal Zone Information
